@@ -6,12 +6,6 @@ using TMPro;
 
 public class ATMUIStyleManager : MonoBehaviour
 {
-    [Header("Colors")]
-    [SerializeField] private Color backgroundColor = new Color(0.8f, 0.5f, 0.4f, 1f); // 연한 갈색
-    [SerializeField] private Color buttonColor = new Color(0.7f, 0.3f, 0.5f, 1f); // 보라색
-    [SerializeField] private Color cashBoxColor = new Color(0.4f, 0.4f, 0.4f, 1f); // 회색
-    [SerializeField] private Color textColor = Color.white;
-    
     [Header("UI References")]
     [SerializeField] private Image backgroundPanel;
     [SerializeField] private Image cashBoxBackground;
@@ -32,35 +26,15 @@ public class ATMUIStyleManager : MonoBehaviour
     
     private void ApplyUIStyles()
     {
-        // 배경 색상 적용
-        if (backgroundPanel != null)
-        {
-            backgroundPanel.color = backgroundColor;
-        }
-        
-        // 현금 박스 색상 적용
-        if (cashBoxBackground != null)
-        {
-            cashBoxBackground.color = cashBoxColor;
-        }
-        
         // 버튼 스타일 적용
         foreach (Button button in actionButtons)
         {
             if (button != null)
             {
-                Image buttonImage = button.GetComponent<Image>();
-                if (buttonImage != null)
-                {
-                    buttonImage.color = buttonColor;
-                }
-                
                 TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
                 if (buttonText != null)
                 {
-                    buttonText.color = textColor;
                     buttonText.fontSize = buttonFontSize;
-                    buttonText.fontStyle = FontStyles.Bold;
                     buttonText.alignment = TextAlignmentOptions.Center;
                 }
             }
@@ -71,7 +45,6 @@ public class ATMUIStyleManager : MonoBehaviour
         {
             if (text != null)
             {
-                text.color = textColor;
                 if (defaultFont != null)
                 {
                     text.font = defaultFont;
@@ -93,7 +66,6 @@ public class ATMUIStyleManager : MonoBehaviour
             if (titleText != null)
             {
                 titleText.fontSize = titleFontSize;
-                titleText.fontStyle = FontStyles.Bold;
                 titleText.alignment = TextAlignmentOptions.Top;
             }
         }
@@ -119,25 +91,6 @@ public class ATMUIStyleManager : MonoBehaviour
             {
                 balanceText.alignment = TextAlignmentOptions.TopRight;
                 balanceText.fontSize = defaultFontSize;
-            }
-        }
-    }
-    
-    public void SetButtonHoverEffect(Button button, bool isHovered)
-    {
-        if (button != null)
-        {
-            Image buttonImage = button.GetComponent<Image>();
-            if (buttonImage != null)
-            {
-                if (isHovered)
-                {
-                    buttonImage.color = new Color(buttonColor.r * 0.8f, buttonColor.g * 0.8f, buttonColor.b * 0.8f, 1f);
-                }
-                else
-                {
-                    buttonImage.color = buttonColor;
-                }
             }
         }
     }

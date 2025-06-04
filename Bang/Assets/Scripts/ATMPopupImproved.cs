@@ -55,7 +55,6 @@ public class ATMPopupImproved : MonoBehaviour
             if (buttonText != null)
             {
                 buttonText.text = string.Format("{0:N0}원", amount);
-                buttonText.fontStyle = FontStyle.Bold;
             }
         }
     }
@@ -69,11 +68,9 @@ public class ATMPopupImproved : MonoBehaviour
     {
         isDepositMode = true;
         popupTitleText.text = "입금하실 금액을 입력해주세요";
-        popupTitleText.fontStyle = FontStyle.Bold;
         
         BankData bankData = bankDataManager.GetBankData();
         currentAmountText.text = string.Format("현재 보유 현금: {0:N0}원", bankData.currentCash);
-        currentAmountText.fontStyle = FontStyle.Bold;
         
         amountInputField.text = "";
         errorMessageText.text = "";
@@ -87,11 +84,9 @@ public class ATMPopupImproved : MonoBehaviour
     {
         isDepositMode = false;
         popupTitleText.text = "출금하실 금액을 입력해주세요";
-        popupTitleText.fontStyle = FontStyle.Bold;
         
         BankData bankData = bankDataManager.GetBankData();
         currentAmountText.text = string.Format("현재 잔액: {0:N0}원", bankData.balance);
-        currentAmountText.fontStyle = FontStyle.Bold;
         
         amountInputField.text = "";
         errorMessageText.text = "";
@@ -168,8 +163,6 @@ public class ATMPopupImproved : MonoBehaviour
     private void ShowErrorMessage(string message)
     {
         errorMessageText.text = message;
-        errorMessageText.color = Color.red;
-        errorMessageText.fontStyle = FontStyle.Bold;
         
         // 3초 후 메시지 지우기
         StopAllCoroutines();

@@ -102,28 +102,28 @@ public class ATMUIController : MonoBehaviour
             {
                 if (amount <= 0)
                 {
-                    ShowMessage("0원 이상의 금액을 입력해주세요.", Color.red);
+                    ShowMessage("0원 이상의 금액을 입력해주세요.");
                     return;
                 }
                 
                 if (GameManager.Instance.DepositToBalance(amount))
                 {
-                    ShowMessage($"{amount:N0}원이 입금되었습니다.", Color.green);
+                    ShowMessage($"{amount:N0}원이 입금되었습니다.");
                     depositAmountInput.text = "";
                 }
                 else
                 {
-                    ShowMessage("입금 실패: 현금이 부족합니다.", Color.red);
+                    ShowMessage("입금 실패: 현금이 부족합니다.");
                 }
             }
             else
             {
-                ShowMessage("올바른 금액을 입력해주세요.", Color.red);
+                ShowMessage("올바른 금액을 입력해주세요.");
             }
         }
         else
         {
-            ShowMessage("입금할 금액을 입력해주세요.", Color.yellow);
+            ShowMessage("입금할 금액을 입력해주세요.");
         }
     }
     
@@ -136,28 +136,28 @@ public class ATMUIController : MonoBehaviour
             {
                 if (amount <= 0)
                 {
-                    ShowMessage("0원 이상의 금액을 입력해주세요.", Color.red);
+                    ShowMessage("0원 이상의 금액을 입력해주세요.");
                     return;
                 }
                 
                 if (GameManager.Instance.WithdrawFromBalance(amount))
                 {
-                    ShowMessage($"{amount:N0}원이 출금되었습니다.", Color.green);
+                    ShowMessage($"{amount:N0}원이 출금되었습니다.");
                     withdrawAmountInput.text = "";
                 }
                 else
                 {
-                    ShowMessage("출금 실패: 잔액이 부족합니다.", Color.red);
+                    ShowMessage("출금 실패: 잔액이 부족합니다.");
                 }
             }
             else
             {
-                ShowMessage("올바른 금액을 입력해주세요.", Color.red);
+                ShowMessage("올바른 금액을 입력해주세요.");
             }
         }
         else
         {
-            ShowMessage("출금할 금액을 입력해주세요.", Color.yellow);
+            ShowMessage("출금할 금액을 입력해주세요.");
         }
     }
     
@@ -165,11 +165,11 @@ public class ATMUIController : MonoBehaviour
     private void OnResetButtonClick()
     {
         GameManager.Instance.ResetUserData();
-        ShowMessage("데이터가 초기값으로 리셋되었습니다.", Color.blue);
+        ShowMessage("데이터가 초기값으로 리셋되었습니다.");
     }
     
     // 메시지 표시
-    private void ShowMessage(string message, Color color = default)
+    private void ShowMessage(string message)
     {
         if (messageText != null)
         {
@@ -177,7 +177,6 @@ public class ATMUIController : MonoBehaviour
                 StopCoroutine(messageCoroutine);
                 
             messageText.text = message;
-            messageText.color = color == default ? Color.white : color;
             messageCoroutine = StartCoroutine(HideMessageAfterDelay());
         }
         

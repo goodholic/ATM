@@ -89,7 +89,6 @@ public class PopupBank : MonoBehaviour
             if (buttonText != null)
             {
                 buttonText.text = string.Format("{0:N0}원", amount);
-                buttonText.fontStyle = FontStyles.Bold;
             }
         }
     }
@@ -123,7 +122,6 @@ public class PopupBank : MonoBehaviour
             if (buttonText != null)
             {
                 buttonText.text = string.Format("{0:N0}원", amount);
-                buttonText.fontStyle = FontStyles.Bold;
             }
         }
     }
@@ -160,14 +158,12 @@ public class PopupBank : MonoBehaviour
             if (depositCurrentCashText != null)
             {
                 depositCurrentCashText.text = string.Format("현재 현금: {0:N0}원", userData.cash);
-                depositCurrentCashText.fontStyle = FontStyles.Bold;
             }
             
             // 타이틀 설정
             if (depositTitleText != null)
             {
                 depositTitleText.text = "입금하실 금액을 입력해주세요";
-                depositTitleText.fontStyle = FontStyles.Bold;
             }
             
             // InputField 초기화
@@ -194,14 +190,12 @@ public class PopupBank : MonoBehaviour
             if (withdrawBalanceText != null)
             {
                 withdrawBalanceText.text = string.Format("현재 잔액: {0:N0}원", userData.balance);
-                withdrawBalanceText.fontStyle = FontStyles.Bold;
             }
             
             // 타이틀 설정
             if (withdrawTitleText != null)
             {
                 withdrawTitleText.text = "출금하실 금액을 입력해주세요";
-                withdrawTitleText.fontStyle = FontStyles.Bold;
             }
             
             // InputField 초기화
@@ -352,8 +346,6 @@ public class PopupBank : MonoBehaviour
             if (errorMessageText != null)
             {
                 errorMessageText.text = message;
-                errorMessageText.fontStyle = FontStyles.Bold;
-                errorMessageText.color = Color.red;
             }
         }
     }

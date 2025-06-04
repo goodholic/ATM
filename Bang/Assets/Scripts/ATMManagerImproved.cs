@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+
 public class ATMManagerImproved : MonoBehaviour
 {
     [Header("UI References")]
@@ -45,9 +46,8 @@ public class ATMManagerImproved : MonoBehaviour
     
     private void InitializeATM()
     {
-        // Title 설정 - Bold체로 작성
+        // Title 설정
         titleText.text = "Sparta Bank";
-        titleText.fontStyle = TMPro.FontStyles.Bold;
         
         // ATM 텍스트 설정
         atmText.text = "ATM";
@@ -81,13 +81,11 @@ public class ATMManagerImproved : MonoBehaviour
             if (depositTextLegacy != null)
             {
                 depositTextLegacy.text = "입금";
-                depositTextLegacy.fontStyle = FontStyle.Bold;
             }
         }
         else
         {
             depositText.text = "입금";
-            depositText.fontStyle = TMPro.FontStyles.Bold;
         }
         
         if (withdrawText == null)
@@ -96,13 +94,11 @@ public class ATMManagerImproved : MonoBehaviour
             if (withdrawTextLegacy != null)
             {
                 withdrawTextLegacy.text = "출금";
-                withdrawTextLegacy.fontStyle = FontStyle.Bold;
             }
         }
         else
         {
             withdrawText.text = "출금";
-            withdrawText.fontStyle = TMPro.FontStyles.Bold;
         }
     }
     
@@ -114,11 +110,9 @@ public class ATMManagerImproved : MonoBehaviour
             
             // 현금 정보 업데이트 - string.Format 활용
             currentCashText.text = string.Format("현금\n{0:N0}", userData.cash);
-            currentCashText.fontStyle = TMPro.FontStyles.Bold;
             
             // 잔액 정보 업데이트 - string.Format 활용
             balanceText.text = string.Format("Balance    {0:N0}", userData.balance);
-            balanceText.fontStyle = TMPro.FontStyles.Bold;
             
             // 유저 이름 업데이트
             userInfoText.text = userData.name;
@@ -187,11 +181,11 @@ public class ATMManagerImproved : MonoBehaviour
         
         if (success)
         {
-            ShowMessage(string.Format("{0:N0}원이 입금되었습니다.", amount), Color.green);
+            ShowMessage(string.Format("{0:N0}원이 입금되었습니다.", amount));
         }
         else
         {
-            ShowMessage("입금에 실패했습니다. 현금이 부족합니다.", Color.red);
+            ShowMessage("입금에 실패했습니다. 현금이 부족합니다.");
         }
     }
     
@@ -201,22 +195,22 @@ public class ATMManagerImproved : MonoBehaviour
         
         if (success)
         {
-            ShowMessage(string.Format("{0:N0}원이 출금되었습니다.", amount), Color.green);
+            ShowMessage(string.Format("{0:N0}원이 출금되었습니다.", amount));
         }
         else
         {
-            ShowMessage("출금에 실패했습니다. 잔액이 부족합니다.", Color.red);
+            ShowMessage("출금에 실패했습니다. 잔액이 부족합니다.");
         }
     }
     
-    private void ShowMessage(string message, Color color)
+    private void ShowMessage(string message)
     {
         Debug.Log(message);
         // 메시지 표시 UI가 있다면 여기서 처리
-        StartCoroutine(ShowTemporaryMessage(message, color));
+        StartCoroutine(ShowTemporaryMessage(message));
     }
     
-    private IEnumerator ShowTemporaryMessage(string message, Color color)
+    private IEnumerator ShowTemporaryMessage(string message)
     {
         // 임시 메시지 표시 로직
         yield return new WaitForSeconds(2f);
