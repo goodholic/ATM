@@ -2,18 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class ATMUIController : MonoBehaviour
 {
     [Header("User Info UI")]
-    public Text nameText;       // 이름 표시 텍스트
-    public Text cashText;       // 현금 표시 텍스트
-    public Text balanceText;    // 통장 잔액 표시 텍스트
-    public Text totalAssetsText; // 총 자산 표시 텍스트 (옵션)
+    public TextMeshProUGUI nameText;       // 이름 표시 텍스트
+    public TextMeshProUGUI cashText;       // 현금 표시 텍스트
+    public TextMeshProUGUI balanceText;    // 통장 잔액 표시 텍스트
+    public TextMeshProUGUI totalAssetsText; // 총 자산 표시 텍스트 (옵션)
     
     [Header("Input Fields")]
-    public InputField depositAmountInput;    // 입금액 입력 필드
-    public InputField withdrawAmountInput;   // 출금액 입력 필드
+    public TMP_InputField depositAmountInput;    // 입금액 입력 필드
+    public TMP_InputField withdrawAmountInput;   // 출금액 입력 필드
     
     [Header("Buttons")]
     public Button depositButton;    // 입금 버튼
@@ -22,7 +23,7 @@ public class ATMUIController : MonoBehaviour
     public Button resetButton;      // 리셋 버튼 (테스트용)
     
     [Header("Message UI")]
-    public Text messageText;        // 메시지 표시 텍스트 (옵션)
+    public TextMeshProUGUI messageText;        // 메시지 표시 텍스트 (옵션)
     public float messageDuration = 2f; // 메시지 표시 시간
     
     private Coroutine messageCoroutine;

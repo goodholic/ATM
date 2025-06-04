@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class ATMUIStyleManager : MonoBehaviour
 {
@@ -15,10 +16,10 @@ public class ATMUIStyleManager : MonoBehaviour
     [SerializeField] private Image backgroundPanel;
     [SerializeField] private Image cashBoxBackground;
     [SerializeField] private Button[] actionButtons;
-    [SerializeField] private Text[] allTexts;
+    [SerializeField] private TextMeshProUGUI[] allTexts;
     
     [Header("Font Settings")]
-    [SerializeField] private Font defaultFont;
+    [SerializeField] private TMP_FontAsset defaultFont;
     [SerializeField] private int titleFontSize = 48;
     [SerializeField] private int atmFontSize = 36;
     [SerializeField] private int defaultFontSize = 24;
@@ -54,19 +55,19 @@ public class ATMUIStyleManager : MonoBehaviour
                     buttonImage.color = buttonColor;
                 }
                 
-                Text buttonText = button.GetComponentInChildren<Text>();
+                TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
                 if (buttonText != null)
                 {
                     buttonText.color = textColor;
                     buttonText.fontSize = buttonFontSize;
-                    buttonText.fontStyle = FontStyle.Bold;
-                    buttonText.alignment = TextAnchor.MiddleCenter;
+                    buttonText.fontStyle = FontStyles.Bold;
+                    buttonText.alignment = TextAlignmentOptions.Center;
                 }
             }
         }
         
         // 텍스트 스타일 적용
-        foreach (Text text in allTexts)
+        foreach (TextMeshProUGUI text in allTexts)
         {
             if (text != null)
             {
@@ -88,12 +89,12 @@ public class ATMUIStyleManager : MonoBehaviour
         GameObject titleObj = GameObject.Find("TitleText");
         if (titleObj != null)
         {
-            Text titleText = titleObj.GetComponent<Text>();
+            TextMeshProUGUI titleText = titleObj.GetComponent<TextMeshProUGUI>();
             if (titleText != null)
             {
                 titleText.fontSize = titleFontSize;
-                titleText.fontStyle = FontStyle.Bold;
-                titleText.alignment = TextAnchor.UpperCenter;
+                titleText.fontStyle = FontStyles.Bold;
+                titleText.alignment = TextAlignmentOptions.Top;
             }
         }
         
@@ -101,11 +102,11 @@ public class ATMUIStyleManager : MonoBehaviour
         GameObject atmObj = GameObject.Find("ATMText");
         if (atmObj != null)
         {
-            Text atmText = atmObj.GetComponent<Text>();
+            TextMeshProUGUI atmText = atmObj.GetComponent<TextMeshProUGUI>();
             if (atmText != null)
             {
                 atmText.fontSize = atmFontSize;
-                atmText.alignment = TextAnchor.UpperCenter;
+                atmText.alignment = TextAlignmentOptions.Top;
             }
         }
         
@@ -113,10 +114,10 @@ public class ATMUIStyleManager : MonoBehaviour
         GameObject balanceObj = GameObject.Find("BalanceText");
         if (balanceObj != null)
         {
-            Text balanceText = balanceObj.GetComponent<Text>();
+            TextMeshProUGUI balanceText = balanceObj.GetComponent<TextMeshProUGUI>();
             if (balanceText != null)
             {
-                balanceText.alignment = TextAnchor.UpperRight;
+                balanceText.alignment = TextAlignmentOptions.TopRight;
                 balanceText.fontSize = defaultFontSize;
             }
         }

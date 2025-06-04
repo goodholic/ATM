@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class PopupBank : MonoBehaviour
 {
@@ -11,23 +12,23 @@ public class PopupBank : MonoBehaviour
     [SerializeField] private GameObject errorPopupPanel;
     
     [Header("Deposit Popup UI")]
-    [SerializeField] private Text depositTitleText;
-    [SerializeField] private Text depositCurrentCashText;
-    [SerializeField] private InputField depositInputField;
+    [SerializeField] private TextMeshProUGUI depositTitleText;
+    [SerializeField] private TextMeshProUGUI depositCurrentCashText;
+    [SerializeField] private TMP_InputField depositInputField;
     [SerializeField] private Button[] depositAmountButtons;
     [SerializeField] private Button depositConfirmButton;
     [SerializeField] private Button depositBackButton;
     
     [Header("Withdraw Popup UI")]
-    [SerializeField] private Text withdrawTitleText;
-    [SerializeField] private Text withdrawBalanceText;
-    [SerializeField] private InputField withdrawInputField;
+    [SerializeField] private TextMeshProUGUI withdrawTitleText;
+    [SerializeField] private TextMeshProUGUI withdrawBalanceText;
+    [SerializeField] private TMP_InputField withdrawInputField;
     [SerializeField] private Button[] withdrawAmountButtons;
     [SerializeField] private Button withdrawConfirmButton;
     [SerializeField] private Button withdrawBackButton;
     
     [Header("Error Popup UI")]
-    [SerializeField] private Text errorMessageText;
+    [SerializeField] private TextMeshProUGUI errorMessageText;
     [SerializeField] private Button errorConfirmButton;
     
     [Header("Quick Amount Settings")]
@@ -84,11 +85,11 @@ public class PopupBank : MonoBehaviour
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => OnQuickAmountClick(depositInputField, amount));
             
-            Text buttonText = button.GetComponentInChildren<Text>();
+            TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
             if (buttonText != null)
             {
                 buttonText.text = string.Format("{0:N0}원", amount);
-                buttonText.fontStyle = FontStyle.Bold;
+                buttonText.fontStyle = FontStyles.Bold;
             }
         }
     }
@@ -118,11 +119,11 @@ public class PopupBank : MonoBehaviour
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => OnQuickAmountClick(withdrawInputField, amount));
             
-            Text buttonText = button.GetComponentInChildren<Text>();
+            TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
             if (buttonText != null)
             {
                 buttonText.text = string.Format("{0:N0}원", amount);
-                buttonText.fontStyle = FontStyle.Bold;
+                buttonText.fontStyle = FontStyles.Bold;
             }
         }
     }
@@ -132,14 +133,14 @@ public class PopupBank : MonoBehaviour
         // 입금 InputField 설정
         if (depositInputField != null)
         {
-            depositInputField.contentType = InputField.ContentType.IntegerNumber;
+            depositInputField.contentType = TMP_InputField.ContentType.IntegerNumber;
             depositInputField.characterLimit = 9;
         }
         
         // 출금 InputField 설정
         if (withdrawInputField != null)
         {
-            withdrawInputField.contentType = InputField.ContentType.IntegerNumber;
+            withdrawInputField.contentType = TMP_InputField.ContentType.IntegerNumber;
             withdrawInputField.characterLimit = 9;
         }
     }
@@ -159,14 +160,14 @@ public class PopupBank : MonoBehaviour
             if (depositCurrentCashText != null)
             {
                 depositCurrentCashText.text = string.Format("현재 현금: {0:N0}원", userData.cash);
-                depositCurrentCashText.fontStyle = FontStyle.Bold;
+                depositCurrentCashText.fontStyle = FontStyles.Bold;
             }
             
             // 타이틀 설정
             if (depositTitleText != null)
             {
                 depositTitleText.text = "입금하실 금액을 입력해주세요";
-                depositTitleText.fontStyle = FontStyle.Bold;
+                depositTitleText.fontStyle = FontStyles.Bold;
             }
             
             // InputField 초기화
@@ -193,14 +194,14 @@ public class PopupBank : MonoBehaviour
             if (withdrawBalanceText != null)
             {
                 withdrawBalanceText.text = string.Format("현재 잔액: {0:N0}원", userData.balance);
-                withdrawBalanceText.fontStyle = FontStyle.Bold;
+                withdrawBalanceText.fontStyle = FontStyles.Bold;
             }
             
             // 타이틀 설정
             if (withdrawTitleText != null)
             {
                 withdrawTitleText.text = "출금하실 금액을 입력해주세요";
-                withdrawTitleText.fontStyle = FontStyle.Bold;
+                withdrawTitleText.fontStyle = FontStyles.Bold;
             }
             
             // InputField 초기화
@@ -212,7 +213,7 @@ public class PopupBank : MonoBehaviour
         }
     }
     
-    private void OnQuickAmountClick(InputField targetInput, int amount)
+    private void OnQuickAmountClick(TMP_InputField targetInput, int amount)
     {
         if (targetInput != null)
         {
@@ -351,7 +352,7 @@ public class PopupBank : MonoBehaviour
             if (errorMessageText != null)
             {
                 errorMessageText.text = message;
-                errorMessageText.fontStyle = FontStyle.Bold;
+                errorMessageText.fontStyle = FontStyles.Bold;
                 errorMessageText.color = Color.red;
             }
         }

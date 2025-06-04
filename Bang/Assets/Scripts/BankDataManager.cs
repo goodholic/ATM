@@ -81,7 +81,13 @@ public class BankDataManager : MonoBehaviour
 
     private void LoadBankData()
     {
-        if (PlayerPrefs.HasKey(SAVE_KEY))
+        // GameManager가 있으면 GameManager의 데이터를 사용
+        if (GameManager.Instance != null && GameManager.Instance.userData != null)
+        {
+            UserData userData = GameManager.Instance.userData;
+            currentBankData = new BankData(userData.name, userData.cash, userData.balance);
+        }
+        else if (PlayerPrefs.HasKey(SAVE_KEY))
         {
             string jsonData = PlayerPrefs.GetString(SAVE_KEY);
             currentBankData = JsonUtility.FromJson<BankData>(jsonData);
@@ -99,10 +105,27 @@ public class BankDataManager : MonoBehaviour
         string jsonData = JsonUtility.ToJson(currentBankData);
         PlayerPrefs.SetString(SAVE_KEY, jsonData);
         PlayerPrefs.Save();
+        
+        // GameManager에도 데이터 동기화
+        if (GameManager.Instance != null && GameManager.Instance.userData != null)
+        {
+            GameManager.Instance.userData.name = currentBankData.userName;
+            GameManager.Instance.userData.cash = currentBankData.currentCash;
+            GameManager.Instance.userData.balance = currentBankData.balance;
+        }
     }
 
     public BankData GetBankData()
     {
+        // GameManager에서 최신 데이터 가져오기
+        if (GameManager.Instance != null && GameManager.Instance.userData != null)
+        {
+            UserData userData = GameManager.Instance.userData;
+            currentBankData.userName = userData.name;
+            currentBankData.currentCash = userData.cash;
+            currentBankData.balance = userData.balance;
+        }
+        
         return currentBankData;
     }
 
@@ -160,4 +183,4 @@ public class BankDataManager : MonoBehaviour
         currentBankData = new BankData("팀예찬", 100000, 50000);
         SaveBankData();
     }
-}
+} 

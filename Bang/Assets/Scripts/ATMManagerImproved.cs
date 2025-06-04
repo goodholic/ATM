@@ -2,16 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using TMPro;
 public class ATMManagerImproved : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private GameObject popupBank;
-    [SerializeField] private Text titleText;
-    [SerializeField] private Text atmText;
-    [SerializeField] private Text userInfoText;
-    [SerializeField] private Text currentCashText;
-    [SerializeField] private Text balanceText;
+    [SerializeField] private TextMeshProUGUI titleText;
+    [SerializeField] private TextMeshProUGUI atmText;
+    [SerializeField] private TextMeshProUGUI userInfoText;
+    [SerializeField] private TextMeshProUGUI currentCashText;
+    [SerializeField] private TextMeshProUGUI balanceText;
     [SerializeField] private Button depositButton;
     [SerializeField] private Button withdrawButton;
     
@@ -47,7 +47,7 @@ public class ATMManagerImproved : MonoBehaviour
     {
         // Title 설정 - Bold체로 작성
         titleText.text = "Sparta Bank";
-        titleText.fontStyle = FontStyle.Bold;
+        titleText.fontStyle = TMPro.FontStyles.Bold;
         
         // ATM 텍스트 설정
         atmText.text = "ATM";
@@ -70,20 +70,39 @@ public class ATMManagerImproved : MonoBehaviour
         depositButton.onClick.AddListener(OnDepositClick);
         withdrawButton.onClick.AddListener(OnWithdrawClick);
         
-        // 버튼 텍스트 설정
-        Text depositText = depositButton.GetComponentInChildren<Text>();
-        Text withdrawText = withdrawButton.GetComponentInChildren<Text>();
+        // 버튼 텍스트 설정 - TMPro 컴포넌트 확인
+        TextMeshProUGUI depositText = depositButton.GetComponentInChildren<TextMeshProUGUI>();
+        TextMeshProUGUI withdrawText = withdrawButton.GetComponentInChildren<TextMeshProUGUI>();
         
-        if (depositText != null)
+        // TMPro가 없으면 기본 Text 컴포넌트 확인
+        if (depositText == null)
+        {
+            Text depositTextLegacy = depositButton.GetComponentInChildren<Text>();
+            if (depositTextLegacy != null)
+            {
+                depositTextLegacy.text = "입금";
+                depositTextLegacy.fontStyle = FontStyle.Bold;
+            }
+        }
+        else
         {
             depositText.text = "입금";
-            depositText.fontStyle = FontStyle.Bold;
+            depositText.fontStyle = TMPro.FontStyles.Bold;
         }
         
-        if (withdrawText != null)
+        if (withdrawText == null)
+        {
+            Text withdrawTextLegacy = withdrawButton.GetComponentInChildren<Text>();
+            if (withdrawTextLegacy != null)
+            {
+                withdrawTextLegacy.text = "출금";
+                withdrawTextLegacy.fontStyle = FontStyle.Bold;
+            }
+        }
+        else
         {
             withdrawText.text = "출금";
-            withdrawText.fontStyle = FontStyle.Bold;
+            withdrawText.fontStyle = TMPro.FontStyles.Bold;
         }
     }
     
@@ -95,11 +114,11 @@ public class ATMManagerImproved : MonoBehaviour
             
             // 현금 정보 업데이트 - string.Format 활용
             currentCashText.text = string.Format("현금\n{0:N0}", userData.cash);
-            currentCashText.fontStyle = FontStyle.Bold;
+            currentCashText.fontStyle = TMPro.FontStyles.Bold;
             
             // 잔액 정보 업데이트 - string.Format 활용
             balanceText.text = string.Format("Balance    {0:N0}", userData.balance);
-            balanceText.fontStyle = FontStyle.Bold;
+            balanceText.fontStyle = TMPro.FontStyles.Bold;
             
             // 유저 이름 업데이트
             userInfoText.text = userData.name;
