@@ -19,11 +19,20 @@ public class ATMManagerImproved : MonoBehaviour
     [SerializeField] private PopupBank popupBankScript;
     [SerializeField] private ATMPopupImproved atmPopup; // 기존 호환성 유지
     
-    private BankDataManager bankDataManager;
+    private void OnEnable()
+    {
+        // 데이터 변경 이벤트 구독
+        GameManager.onDataChanged += UpdateDisplay;
+    }
+    
+    private void OnDisable()
+    {
+        // 데이터 변경 이벤트 구독 해제
+        GameManager.onDataChanged -= UpdateDisplay;
+    }
     
     private void Start()
     {
-        bankDataManager = BankDataManager.Instance;
         InitializeATM();
         SetupButtons();
         
@@ -43,9 +52,11 @@ public class ATMManagerImproved : MonoBehaviour
         // ATM 텍스트 설정
         atmText.text = "ATM";
         
-        // UserInfo 설정
-        BankData bankData = bankDataManager.GetBankData();
-        userInfoText.text = bankData.userName;
+        // GameManager에서 UserData 가져와서 표시
+        if (GameManager.Instance != null && GameManager.Instance.userData != null)
+        {
+            userInfoText.text = GameManager.Instance.userData.name;
+        }
         
         // 현금 및 잔액 정보 업데이트
         UpdateDisplay();
@@ -78,15 +89,21 @@ public class ATMManagerImproved : MonoBehaviour
     
     public void UpdateDisplay()
     {
-        BankData bankData = bankDataManager.GetBankData();
-        
-        // 현금 정보 업데이트 - string.Format 활용
-        currentCashText.text = string.Format("현금\n{0:N0}", bankData.currentCash);
-        currentCashText.fontStyle = FontStyle.Bold;
-        
-        // 잔액 정보 업데이트 - string.Format 활용
-        balanceText.text = string.Format("Balance    {0:N0}", bankData.balance);
-        balanceText.fontStyle = FontStyle.Bold;
+        if (GameManager.Instance != null && GameManager.Instance.userData != null)
+        {
+            UserData userData = GameManager.Instance.userData;
+            
+            // 현금 정보 업데이트 - string.Format 활용
+            currentCashText.text = string.Format("현금\n{0:N0}", userData.cash);
+            currentCashText.fontStyle = FontStyle.Bold;
+            
+            // 잔액 정보 업데이트 - string.Format 활용
+            balanceText.text = string.Format("Balance    {0:N0}", userData.balance);
+            balanceText.fontStyle = FontStyle.Bold;
+            
+            // 유저 이름 업데이트
+            userInfoText.text = userData.name;
+        }
     }
     
     private void OnDepositClick()
@@ -147,11 +164,10 @@ public class ATMManagerImproved : MonoBehaviour
     
     public void ProcessDeposit(int amount)
     {
-        bool success = bankDataManager.Deposit(amount);
+        bool success = GameManager.Instance.DepositToBalance(amount);
         
         if (success)
         {
-            UpdateDisplay();
             ShowMessage(string.Format("{0:N0}원이 입금되었습니다.", amount), Color.green);
         }
         else
@@ -162,11 +178,10 @@ public class ATMManagerImproved : MonoBehaviour
     
     public void ProcessWithdraw(int amount)
     {
-        bool success = bankDataManager.Withdraw(amount);
+        bool success = GameManager.Instance.WithdrawFromBalance(amount);
         
         if (success)
         {
-            UpdateDisplay();
             ShowMessage(string.Format("{0:N0}원이 출금되었습니다.", amount), Color.green);
         }
         else
@@ -188,22 +203,18 @@ public class ATMManagerImproved : MonoBehaviour
         yield return new WaitForSeconds(2f);
     }
     
-    // 거래 내역 조회
+    // 거래 내역 조회 (BankDataManager를 사용하는 경우)
     public void ShowTransactionHistory()
     {
-        List<TransactionRecord> history = bankDataManager.GetTransactionHistory();
-        
-        foreach (TransactionRecord record in history)
-        {
-            string type = record.type == TransactionRecord.TransactionType.Deposit ? "입금" : "출금";
-            Debug.Log(string.Format("[{0}] {1}: {2:N0}원, 잔액: {3:N0}원", 
-                record.dateTime, type, record.amount, record.balanceAfter));
-        }
+        // GameManager를 사용하므로 이 기능은 별도 구현 필요
+        Debug.Log("거래 내역 기능은 별도 구현이 필요합니다.");
     }
     
     // PopupBank에서 접근할 수 있도록 public 메서드 추가
     public BankData GetBankData()
     {
-        return bankDataManager.GetBankData();
+        // GameManager의 UserData를 BankData로 변환
+        UserData userData = GameManager.Instance.userData;
+        return new BankData(userData.name, userData.cash, userData.balance);
     }
 }

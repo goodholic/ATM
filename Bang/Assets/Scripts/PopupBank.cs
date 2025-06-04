@@ -5,121 +5,145 @@ using UnityEngine.UI;
 
 public class PopupBank : MonoBehaviour
 {
-    [Header("Popup Settings")]
+    [Header("Popup Panels")]
     [SerializeField] private GameObject depositPopupPanel;
     [SerializeField] private GameObject withdrawPopupPanel;
+    [SerializeField] private GameObject errorPopupPanel;
     
     [Header("Deposit Popup UI")]
     [SerializeField] private Text depositTitleText;
-    [SerializeField] private InputField depositAmountInput;
+    [SerializeField] private Text depositCurrentCashText;
+    [SerializeField] private InputField depositInputField;
+    [SerializeField] private Button[] depositAmountButtons;
     [SerializeField] private Button depositConfirmButton;
-    [SerializeField] private Button depositCancelButton;
-    [SerializeField] private Text depositErrorText;
+    [SerializeField] private Button depositBackButton;
     
     [Header("Withdraw Popup UI")]
     [SerializeField] private Text withdrawTitleText;
-    [SerializeField] private InputField withdrawAmountInput;
+    [SerializeField] private Text withdrawBalanceText;
+    [SerializeField] private InputField withdrawInputField;
+    [SerializeField] private Button[] withdrawAmountButtons;
     [SerializeField] private Button withdrawConfirmButton;
-    [SerializeField] private Button withdrawCancelButton;
-    [SerializeField] private Text withdrawErrorText;
+    [SerializeField] private Button withdrawBackButton;
     
-    [Header("Quick Amount Buttons")]
-    [SerializeField] private Button[] depositQuickButtons;
-    [SerializeField] private Button[] withdrawQuickButtons;
+    [Header("Error Popup UI")]
+    [SerializeField] private Text errorMessageText;
+    [SerializeField] private Button errorConfirmButton;
+    
+    [Header("Quick Amount Settings")]
     private int[] quickAmounts = { 10000, 30000, 50000, 100000 };
     
-    private ATMManager atmManager;
-    private ATMManagerImproved atmManagerImproved;
+    [Header("References")]
+    [SerializeField] private ATMManagerImproved atmManager;
     
-    private void Awake()
+    private void Start()
     {
+        // 초기 설정
+        SetupDepositButtons();
+        SetupWithdrawButtons();
+        SetupInputFields();
+        
+        // 에러 팝업 버튼 설정
+        if (errorConfirmButton != null)
+        {
+            errorConfirmButton.onClick.AddListener(CloseErrorPopup);
+        }
+        
         // ATMManager 찾기
-        atmManager = FindFirstObjectByType<ATMManager>();
-        atmManagerImproved = FindFirstObjectByType<ATMManagerImproved>();
+        if (atmManager == null)
+        {
+            atmManager = FindFirstObjectByType<ATMManagerImproved>();
+        }
         
         // 초기에는 모든 팝업 숨기기
         HideAllPopups();
     }
     
-    private void Start()
+    private void SetupDepositButtons()
     {
-        // 버튼 이벤트 설정
-        SetupButtonEvents();
-        SetupQuickAmountButtons();
-        
-        // InputField 설정
-        if (depositAmountInput != null)
-        {
-            depositAmountInput.contentType = InputField.ContentType.IntegerNumber;
-            depositAmountInput.characterLimit = 9;
-        }
-        
-        if (withdrawAmountInput != null)
-        {
-            withdrawAmountInput.contentType = InputField.ContentType.IntegerNumber;
-            withdrawAmountInput.characterLimit = 9;
-        }
-    }
-    
-    private void SetupButtonEvents()
-    {
-        // 입금 팝업 버튼들
+        // 입금 확인 버튼
         if (depositConfirmButton != null)
-            depositConfirmButton.onClick.AddListener(OnDepositConfirm);
-            
-        if (depositCancelButton != null)
-            depositCancelButton.onClick.AddListener(OnDepositCancel);
-            
-        // 출금 팝업 버튼들
-        if (withdrawConfirmButton != null)
-            withdrawConfirmButton.onClick.AddListener(OnWithdrawConfirm);
-            
-        if (withdrawCancelButton != null)
-            withdrawCancelButton.onClick.AddListener(OnWithdrawCancel);
-    }
-    
-    private void SetupQuickAmountButtons()
-    {
-        // 입금 빠른 금액 버튼
-        for (int i = 0; i < depositQuickButtons.Length && i < quickAmounts.Length; i++)
         {
-            int amount = quickAmounts[i];
-            Button button = depositQuickButtons[i];
-            
-            if (button != null)
-            {
-                button.onClick.AddListener(() => SetDepositAmount(amount));
-                
-                Text buttonText = button.GetComponentInChildren<Text>();
-                if (buttonText != null)
-                {
-                    buttonText.text = string.Format("{0:N0}원", amount);
-                    buttonText.fontStyle = FontStyle.Bold;
-                }
-            }
+            depositConfirmButton.onClick.RemoveAllListeners();
+            depositConfirmButton.onClick.AddListener(OnDepositConfirm);
         }
         
-        // 출금 빠른 금액 버튼
-        for (int i = 0; i < withdrawQuickButtons.Length && i < quickAmounts.Length; i++)
+        // 입금 뒤로가기 버튼
+        if (depositBackButton != null)
+        {
+            depositBackButton.onClick.RemoveAllListeners();
+            depositBackButton.onClick.AddListener(CloseDepositPopup);
+        }
+        
+        // 빠른 금액 버튼들 설정
+        for (int i = 0; i < depositAmountButtons.Length && i < quickAmounts.Length; i++)
         {
             int amount = quickAmounts[i];
-            Button button = withdrawQuickButtons[i];
+            Button button = depositAmountButtons[i];
             
-            if (button != null)
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() => OnQuickAmountClick(depositInputField, amount));
+            
+            Text buttonText = button.GetComponentInChildren<Text>();
+            if (buttonText != null)
             {
-                button.onClick.AddListener(() => SetWithdrawAmount(amount));
-                
-                Text buttonText = button.GetComponentInChildren<Text>();
-                if (buttonText != null)
-                {
-                    buttonText.text = string.Format("{0:N0}원", amount);
-                    buttonText.fontStyle = FontStyle.Bold;
-                }
+                buttonText.text = string.Format("{0:N0}원", amount);
+                buttonText.fontStyle = FontStyle.Bold;
             }
         }
     }
     
-    // 입금 팝업 표시
+    private void SetupWithdrawButtons()
+    {
+        // 출금 확인 버튼
+        if (withdrawConfirmButton != null)
+        {
+            withdrawConfirmButton.onClick.RemoveAllListeners();
+            withdrawConfirmButton.onClick.AddListener(OnWithdrawConfirm);
+        }
+        
+        // 출금 뒤로가기 버튼
+        if (withdrawBackButton != null)
+        {
+            withdrawBackButton.onClick.RemoveAllListeners();
+            withdrawBackButton.onClick.AddListener(CloseWithdrawPopup);
+        }
+        
+        // 빠른 금액 버튼들 설정
+        for (int i = 0; i < withdrawAmountButtons.Length && i < quickAmounts.Length; i++)
+        {
+            int amount = quickAmounts[i];
+            Button button = withdrawAmountButtons[i];
+            
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() => OnQuickAmountClick(withdrawInputField, amount));
+            
+            Text buttonText = button.GetComponentInChildren<Text>();
+            if (buttonText != null)
+            {
+                buttonText.text = string.Format("{0:N0}원", amount);
+                buttonText.fontStyle = FontStyle.Bold;
+            }
+        }
+    }
+    
+    private void SetupInputFields()
+    {
+        // 입금 InputField 설정
+        if (depositInputField != null)
+        {
+            depositInputField.contentType = InputField.ContentType.IntegerNumber;
+            depositInputField.characterLimit = 9;
+        }
+        
+        // 출금 InputField 설정
+        if (withdrawInputField != null)
+        {
+            withdrawInputField.contentType = InputField.ContentType.IntegerNumber;
+            withdrawInputField.characterLimit = 9;
+        }
+    }
+    
     public void ShowDepositPopup()
     {
         HideAllPopups();
@@ -128,27 +152,32 @@ public class PopupBank : MonoBehaviour
         {
             depositPopupPanel.SetActive(true);
             
-            // UI 초기화
+            // GameManager에서 UserData 가져오기
+            UserData userData = GameManager.Instance.userData;
+            
+            // 현재 현금 표시
+            if (depositCurrentCashText != null)
+            {
+                depositCurrentCashText.text = string.Format("현재 현금: {0:N0}원", userData.cash);
+                depositCurrentCashText.fontStyle = FontStyle.Bold;
+            }
+            
+            // 타이틀 설정
             if (depositTitleText != null)
             {
                 depositTitleText.text = "입금하실 금액을 입력해주세요";
                 depositTitleText.fontStyle = FontStyle.Bold;
             }
             
-            if (depositAmountInput != null)
+            // InputField 초기화
+            if (depositInputField != null)
             {
-                depositAmountInput.text = "";
-                depositAmountInput.Select();
-            }
-            
-            if (depositErrorText != null)
-            {
-                depositErrorText.text = "";
+                depositInputField.text = "";
+                depositInputField.Select();
             }
         }
     }
     
-    // 출금 팝업 표시
     public void ShowWithdrawPopup()
     {
         HideAllPopups();
@@ -157,253 +186,246 @@ public class PopupBank : MonoBehaviour
         {
             withdrawPopupPanel.SetActive(true);
             
-            // UI 초기화
+            // GameManager에서 UserData 가져오기
+            UserData userData = GameManager.Instance.userData;
+            
+            // 현재 잔액 표시
+            if (withdrawBalanceText != null)
+            {
+                withdrawBalanceText.text = string.Format("현재 잔액: {0:N0}원", userData.balance);
+                withdrawBalanceText.fontStyle = FontStyle.Bold;
+            }
+            
+            // 타이틀 설정
             if (withdrawTitleText != null)
             {
                 withdrawTitleText.text = "출금하실 금액을 입력해주세요";
                 withdrawTitleText.fontStyle = FontStyle.Bold;
             }
             
-            if (withdrawAmountInput != null)
+            // InputField 초기화
+            if (withdrawInputField != null)
             {
-                withdrawAmountInput.text = "";
-                withdrawAmountInput.Select();
-            }
-            
-            if (withdrawErrorText != null)
-            {
-                withdrawErrorText.text = "";
+                withdrawInputField.text = "";
+                withdrawInputField.Select();
             }
         }
     }
     
-    // 모든 팝업 숨기기
-    public void HideAllPopups()
+    private void OnQuickAmountClick(InputField targetInput, int amount)
     {
-        if (depositPopupPanel != null)
-            depositPopupPanel.SetActive(false);
-            
-        if (withdrawPopupPanel != null)
-            withdrawPopupPanel.SetActive(false);
+        if (targetInput != null)
+        {
+            targetInput.text = amount.ToString();
+        }
     }
     
-    // 입금 금액 설정
-    private void SetDepositAmount(int amount)
-    {
-        if (depositAmountInput != null)
-            depositAmountInput.text = amount.ToString();
-    }
-    
-    // 출금 금액 설정
-    private void SetWithdrawAmount(int amount)
-    {
-        if (withdrawAmountInput != null)
-            withdrawAmountInput.text = amount.ToString();
-    }
-    
-    // 입금 확인
     private void OnDepositConfirm()
     {
-        if (depositAmountInput == null) return;
-        
-        string inputText = depositAmountInput.text;
+        string inputText = depositInputField.text;
         
         if (string.IsNullOrEmpty(inputText))
         {
-            ShowDepositError("금액을 입력해주세요.");
+            ShowErrorPopup("금액을 입력해주세요.");
             return;
         }
         
         int amount;
         if (!int.TryParse(inputText, out amount))
         {
-            ShowDepositError("올바른 숫자를 입력해주세요.");
+            ShowErrorPopup("올바른 숫자를 입력해주세요.");
             return;
         }
         
         if (amount <= 0)
         {
-            ShowDepositError("0보다 큰 금액을 입력해주세요.");
+            ShowErrorPopup("0보다 큰 금액을 입력해주세요.");
             return;
         }
         
+        // 최대 금액 제한
         if (amount > 10000000)
         {
-            ShowDepositError("1천만원 이하의 금액을 입력해주세요.");
+            ShowErrorPopup("1천만원 이하의 금액을 입력해주세요.");
             return;
         }
         
-        // ATMManager에 입금 처리 요청
-        bool success = false;
+        // GameManager에서 UserData 가져오기
+        UserData userData = GameManager.Instance.userData;
         
-        if (atmManagerImproved != null)
+        // 현금 확인
+        if (amount > userData.cash)
         {
-            atmManagerImproved.ProcessDeposit(amount);
-            success = true;
+            ShowErrorPopup(string.Format("현금이 부족합니다.\n현재 현금: {0:N0}원", userData.cash));
+            return;
         }
-        else if (atmManager != null)
-        {
-            atmManager.Deposit(amount);
-            success = true;
-        }
+        
+        // 입금 처리
+        bool success = GameManager.Instance.DepositToBalance(amount);
         
         if (success)
         {
-            HideAllPopups();
+            CloseDepositPopup();
+            
+            // ATMManager UI 업데이트
+            if (atmManager != null)
+            {
+                atmManager.UpdateDisplay();
+            }
+            
+            Debug.Log(string.Format("{0:N0}원이 입금되었습니다.", amount));
         }
         else
         {
-            ShowDepositError("입금 처리에 실패했습니다.");
+            ShowErrorPopup("입금 처리 중 오류가 발생했습니다.");
         }
     }
     
-    // 입금 취소
-    private void OnDepositCancel()
-    {
-        HideAllPopups();
-    }
-    
-    // 출금 확인
     private void OnWithdrawConfirm()
     {
-        if (withdrawAmountInput == null) return;
-        
-        string inputText = withdrawAmountInput.text;
+        string inputText = withdrawInputField.text;
         
         if (string.IsNullOrEmpty(inputText))
         {
-            ShowWithdrawError("금액을 입력해주세요.");
+            ShowErrorPopup("금액을 입력해주세요.");
             return;
         }
         
         int amount;
         if (!int.TryParse(inputText, out amount))
         {
-            ShowWithdrawError("올바른 숫자를 입력해주세요.");
+            ShowErrorPopup("올바른 숫자를 입력해주세요.");
             return;
         }
         
         if (amount <= 0)
         {
-            ShowWithdrawError("0보다 큰 금액을 입력해주세요.");
+            ShowErrorPopup("0보다 큰 금액을 입력해주세요.");
             return;
         }
         
+        // 최대 금액 제한
         if (amount > 10000000)
         {
-            ShowWithdrawError("1천만원 이하의 금액을 입력해주세요.");
+            ShowErrorPopup("1천만원 이하의 금액을 입력해주세요.");
             return;
         }
         
-        // ATMManager에 출금 처리 요청
-        bool success = false;
+        // GameManager에서 UserData 가져오기
+        UserData userData = GameManager.Instance.userData;
         
-        if (atmManagerImproved != null)
+        // 잔액 확인
+        if (amount > userData.balance)
         {
-            atmManagerImproved.ProcessWithdraw(amount);
-            success = true;
+            ShowErrorPopup(string.Format("잔액이 부족합니다.\n현재 잔액: {0:N0}원", userData.balance));
+            return;
         }
-        else if (atmManager != null)
-        {
-            atmManager.Withdraw(amount);
-            success = true;
-        }
+        
+        // 출금 처리
+        bool success = GameManager.Instance.WithdrawFromBalance(amount);
         
         if (success)
         {
-            HideAllPopups();
+            CloseWithdrawPopup();
+            
+            // ATMManager UI 업데이트
+            if (atmManager != null)
+            {
+                atmManager.UpdateDisplay();
+            }
+            
+            Debug.Log(string.Format("{0:N0}원이 출금되었습니다.", amount));
         }
         else
         {
-            ShowWithdrawError("출금 처리에 실패했습니다.");
+            ShowErrorPopup("출금 처리 중 오류가 발생했습니다.");
         }
     }
     
-    // 출금 취소
-    private void OnWithdrawCancel()
+    private void ShowErrorPopup(string message)
     {
-        HideAllPopups();
-    }
-    
-    // 입금 에러 메시지 표시
-    private void ShowDepositError(string message)
-    {
-        if (depositErrorText != null)
+        if (errorPopupPanel != null)
         {
-            depositErrorText.text = message;
-            depositErrorText.color = Color.red;
-            depositErrorText.fontStyle = FontStyle.Bold;
+            errorPopupPanel.SetActive(true);
             
-            StopAllCoroutines();
-            StartCoroutine(ClearErrorMessageAfterDelay(depositErrorText, 3f));
+            if (errorMessageText != null)
+            {
+                errorMessageText.text = message;
+                errorMessageText.fontStyle = FontStyle.Bold;
+                errorMessageText.color = Color.red;
+            }
         }
     }
     
-    // 출금 에러 메시지 표시
-    private void ShowWithdrawError(string message)
+    private void CloseErrorPopup()
     {
-        if (withdrawErrorText != null)
+        if (errorPopupPanel != null)
         {
-            withdrawErrorText.text = message;
-            withdrawErrorText.color = Color.red;
-            withdrawErrorText.fontStyle = FontStyle.Bold;
-            
-            StopAllCoroutines();
-            StartCoroutine(ClearErrorMessageAfterDelay(withdrawErrorText, 3f));
+            errorPopupPanel.SetActive(false);
         }
     }
     
-    // 에러 메시지 제거 코루틴
-    private IEnumerator ClearErrorMessageAfterDelay(Text errorText, float delay)
+    private void CloseDepositPopup()
     {
-        yield return new WaitForSeconds(delay);
-        if (errorText != null)
-            errorText.text = "";
+        if (depositPopupPanel != null)
+        {
+            depositPopupPanel.SetActive(false);
+            depositInputField.text = "";
+        }
+    }
+    
+    private void CloseWithdrawPopup()
+    {
+        if (withdrawPopupPanel != null)
+        {
+            withdrawPopupPanel.SetActive(false);
+            withdrawInputField.text = "";
+        }
+    }
+    
+    private void HideAllPopups()
+    {
+        if (depositPopupPanel != null) depositPopupPanel.SetActive(false);
+        if (withdrawPopupPanel != null) withdrawPopupPanel.SetActive(false);
+        if (errorPopupPanel != null) errorPopupPanel.SetActive(false);
     }
     
     // Update에서 키보드 입력 처리
     private void Update()
     {
-        // 입금 팝업이 활성화되어 있을 때
+        // 입금 팝업에서 Enter/Escape 처리
         if (depositPopupPanel != null && depositPopupPanel.activeSelf)
         {
-            if (Input.GetKeyDown(KeyCode.Return))
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
                 OnDepositConfirm();
             }
             else if (Input.GetKeyDown(KeyCode.Escape))
             {
-                OnDepositCancel();
+                CloseDepositPopup();
             }
         }
         
-        // 출금 팝업이 활성화되어 있을 때
+        // 출금 팝업에서 Enter/Escape 처리
         if (withdrawPopupPanel != null && withdrawPopupPanel.activeSelf)
         {
-            if (Input.GetKeyDown(KeyCode.Return))
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
                 OnWithdrawConfirm();
             }
             else if (Input.GetKeyDown(KeyCode.Escape))
             {
-                OnWithdrawCancel();
+                CloseWithdrawPopup();
             }
         }
-    }
-    
-    private void OnDestroy()
-    {
-        // 버튼 이벤트 해제
-        if (depositConfirmButton != null)
-            depositConfirmButton.onClick.RemoveListener(OnDepositConfirm);
-            
-        if (depositCancelButton != null)
-            depositCancelButton.onClick.RemoveListener(OnDepositCancel);
-            
-        if (withdrawConfirmButton != null)
-            withdrawConfirmButton.onClick.RemoveListener(OnWithdrawConfirm);
-            
-        if (withdrawCancelButton != null)
-            withdrawCancelButton.onClick.RemoveListener(OnWithdrawCancel);
+        
+        // 에러 팝업에서 Enter/Escape 처리
+        if (errorPopupPanel != null && errorPopupPanel.activeSelf)
+        {
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Escape))
+            {
+                CloseErrorPopup();
+            }
+        }
     }
 }
