@@ -27,7 +27,7 @@ public class PopupBank : MonoBehaviour
     [SerializeField] private Button withdrawBackButton;
     
     [Header("Quick Amount Settings")]
-    private int[] quickAmounts = { 10000, 30000, 50000, 100000 };
+    private int[] quickAmounts = { 10000, 30000, 50000 };  // 1만원, 3만원, 5만원으로 수정
     
     [Header("References")]
     [SerializeField] private ATMManagerImproved atmManager;
@@ -65,7 +65,7 @@ public class PopupBank : MonoBehaviour
             depositBackButton.onClick.AddListener(CloseDepositPopup);
         }
         
-        // 빠른 금액 버튼들 설정
+        // 빠른 금액 버튼들 설정 - 1만원, 3만원, 5만원
         for (int i = 0; i < depositAmountButtons.Length && i < quickAmounts.Length; i++)
         {
             int amount = quickAmounts[i];
@@ -77,7 +77,22 @@ public class PopupBank : MonoBehaviour
             TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
             if (buttonText != null)
             {
-                buttonText.text = string.Format("{0:N0}원", amount);
+                // 버튼 텍스트 설정
+                switch(amount)
+                {
+                    case 10000:
+                        buttonText.text = "1만원";
+                        break;
+                    case 30000:
+                        buttonText.text = "3만원";
+                        break;
+                    case 50000:
+                        buttonText.text = "5만원";
+                        break;
+                    default:
+                        buttonText.text = string.Format("{0:N0}원", amount);
+                        break;
+                }
             }
         }
     }
@@ -98,7 +113,7 @@ public class PopupBank : MonoBehaviour
             withdrawBackButton.onClick.AddListener(CloseWithdrawPopup);
         }
         
-        // 빠른 금액 버튼들 설정
+        // 빠른 금액 버튼들 설정 - 1만원, 3만원, 5만원
         for (int i = 0; i < withdrawAmountButtons.Length && i < quickAmounts.Length; i++)
         {
             int amount = quickAmounts[i];
@@ -110,7 +125,22 @@ public class PopupBank : MonoBehaviour
             TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
             if (buttonText != null)
             {
-                buttonText.text = string.Format("{0:N0}원", amount);
+                // 버튼 텍스트 설정
+                switch(amount)
+                {
+                    case 10000:
+                        buttonText.text = "1만원";
+                        break;
+                    case 30000:
+                        buttonText.text = "3만원";
+                        break;
+                    case 50000:
+                        buttonText.text = "5만원";
+                        break;
+                    default:
+                        buttonText.text = string.Format("{0:N0}원", amount);
+                        break;
+                }
             }
         }
     }

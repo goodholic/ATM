@@ -18,7 +18,6 @@ public class ATMManagerImproved : MonoBehaviour
     
     [Header("Popup References")]
     [SerializeField] private PopupBank popupBankScript;
-    [SerializeField] private ATMPopupImproved atmPopup; // 기존 호환성 유지
     
     private void OnEnable()
     {
@@ -126,11 +125,6 @@ public class ATMManagerImproved : MonoBehaviour
         {
             popupBankScript.ShowDepositPopup();
         }
-        else if (atmPopup != null)
-        {
-            // 기존 ATMPopupImproved가 있으면 사용
-            atmPopup.ShowDepositPopup();
-        }
         else if (popupBank != null)
         {
             // PopupBank GameObject를 직접 제어
@@ -143,7 +137,7 @@ public class ATMManagerImproved : MonoBehaviour
         }
         else
         {
-            Debug.LogError("PopupBank 또는 ATMPopup reference가 없습니다!");
+            Debug.LogError("PopupBank reference가 없습니다!");
         }
     }
     
@@ -153,11 +147,6 @@ public class ATMManagerImproved : MonoBehaviour
         if (popupBankScript != null)
         {
             popupBankScript.ShowWithdrawPopup();
-        }
-        else if (atmPopup != null)
-        {
-            // 기존 ATMPopupImproved가 있으면 사용
-            atmPopup.ShowWithdrawPopup();
         }
         else if (popupBank != null)
         {
@@ -171,7 +160,7 @@ public class ATMManagerImproved : MonoBehaviour
         }
         else
         {
-            Debug.LogError("PopupBank 또는 ATMPopup reference가 없습니다!");
+            Debug.LogError("PopupBank reference가 없습니다!");
         }
     }
     
