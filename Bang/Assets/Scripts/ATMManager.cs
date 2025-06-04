@@ -15,6 +15,9 @@ public class ATMManager : MonoBehaviour
     [SerializeField] private Button depositButton;
     [SerializeField] private Button withdrawButton;
     
+    [Header("Popup Reference")]
+    [SerializeField] private PopupBank popupBankScript;
+    
     [Header("Bank Data")]
     private int currentCash = 100000;
     private int balance = 50000;
@@ -24,6 +27,12 @@ public class ATMManager : MonoBehaviour
     {
         InitializeATM();
         SetupButtons();
+        
+        // PopupBank 스크립트 찾기
+        if (popupBankScript == null)
+        {
+            popupBankScript = FindFirstObjectByType<PopupBank>();
+        }
     }
     
     private void InitializeATM()
@@ -47,12 +56,29 @@ public class ATMManager : MonoBehaviour
     
     private void SetupButtons()
     {
+        // 기존 리스너 제거
+        depositButton.onClick.RemoveAllListeners();
+        withdrawButton.onClick.RemoveAllListeners();
+        
+        // 새로운 리스너 추가
         depositButton.onClick.AddListener(OnDepositClick);
         withdrawButton.onClick.AddListener(OnWithdrawClick);
         
         // 버튼 텍스트 설정
-        depositButton.GetComponentInChildren<Text>().text = "입금";
-        withdrawButton.GetComponentInChildren<Text>().text = "출금";
+        Text depositText = depositButton.GetComponentInChildren<Text>();
+        Text withdrawText = withdrawButton.GetComponentInChildren<Text>();
+        
+        if (depositText != null)
+        {
+            depositText.text = "입금";
+            depositText.fontStyle = FontStyle.Bold;
+        }
+        
+        if (withdrawText != null)
+        {
+            withdrawText.text = "출금";
+            withdrawText.fontStyle = FontStyle.Bold;
+        }
     }
     
     private void UpdateUserInfo()
@@ -72,41 +98,47 @@ public class ATMManager : MonoBehaviour
     
     private void OnDepositClick()
     {
-        // 입금 팝업 표시
-        ShowDepositPopup();
+        // PopupBank를 사용한 입금 팝업 표시
+        if (popupBankScript != null)
+        {
+            popupBankScript.ShowDepositPopup();
+        }
+        else if (popupBank != null)
+        {
+            // PopupBank 스크립트가 없으면 GameObject를 직접 활성화
+            Transform depositPopup = popupBank.transform.Find("DepositPopup");
+            if (depositPopup != null)
+            {
+                depositPopup.gameObject.SetActive(true);
+            }
+            Debug.Log("입금 팝업 표시");
+        }
+        else
+        {
+            Debug.LogWarning("PopupBank를 찾을 수 없습니다.");
+        }
     }
     
     private void OnWithdrawClick()
     {
-        // 출금 팝업 표시
-        ShowWithdrawPopup();
-    }
-    
-    private void ShowDepositPopup()
-    {
-        // 입금 팝업 로직
-        ATMPopup popup = FindFirstObjectByType<ATMPopup>();
-        if (popup != null)
+        // PopupBank를 사용한 출금 팝업 표시
+        if (popupBankScript != null)
         {
-            popup.ShowDepositPopup();
+            popupBankScript.ShowWithdrawPopup();
         }
-        else
+        else if (popupBank != null)
         {
-            Debug.Log("입금 팝업 표시");
-        }
-    }
-    
-    private void ShowWithdrawPopup()
-    {
-        // 출금 팝업 로직
-        ATMPopup popup = FindFirstObjectByType<ATMPopup>();
-        if (popup != null)
-        {
-            popup.ShowWithdrawPopup();
-        }
-        else
-        {
+            // PopupBank 스크립트가 없으면 GameObject를 직접 활성화
+            Transform withdrawPopup = popupBank.transform.Find("WithdrawPopup");
+            if (withdrawPopup != null)
+            {
+                withdrawPopup.gameObject.SetActive(true);
+            }
             Debug.Log("출금 팝업 표시");
+        }
+        else
+        {
+            Debug.LogWarning("PopupBank를 찾을 수 없습니다.");
         }
     }
     
@@ -131,6 +163,9 @@ public class ATMManager : MonoBehaviour
         UpdateBalanceDisplay();
         
         Debug.Log(string.Format("{0}원이 입금되었습니다.", amount));
+        
+        // 성공 메시지 표시 (옵션)
+        StartCoroutine(ShowSuccessMessage(string.Format("{0:N0}원이 입금되었습니다.", amount)));
     }
     
     public void Withdraw(int amount)
@@ -154,5 +189,27 @@ public class ATMManager : MonoBehaviour
         UpdateBalanceDisplay();
         
         Debug.Log(string.Format("{0}원이 출금되었습니다.", amount));
+        
+        // 성공 메시지 표시 (옵션)
+        StartCoroutine(ShowSuccessMessage(string.Format("{0:N0}원이 출금되었습니다.", amount)));
+    }
+    
+    private IEnumerator ShowSuccessMessage(string message)
+    {
+        // 메시지 표시 UI가 있다면 여기서 처리
+        Debug.Log(message);
+        yield return new WaitForSeconds(2f);
+    }
+    
+    // 현재 현금 반환
+    public int GetCurrentCash()
+    {
+        return currentCash;
+    }
+    
+    // 현재 잔액 반환
+    public int GetBalance()
+    {
+        return balance;
     }
 }

@@ -16,7 +16,8 @@ public class ATMManagerImproved : MonoBehaviour
     [SerializeField] private Button withdrawButton;
     
     [Header("Popup References")]
-    [SerializeField] private ATMPopup atmPopup;
+    [SerializeField] private PopupBank popupBankScript;
+    [SerializeField] private ATMPopupImproved atmPopup; // 기존 호환성 유지
     
     private BankDataManager bankDataManager;
     
@@ -25,6 +26,12 @@ public class ATMManagerImproved : MonoBehaviour
         bankDataManager = BankDataManager.Instance;
         InitializeATM();
         SetupButtons();
+        
+        // PopupBank 스크립트 찾기
+        if (popupBankScript == null)
+        {
+            popupBankScript = FindFirstObjectByType<PopupBank>();
+        }
     }
     
     private void InitializeATM()
@@ -84,25 +91,57 @@ public class ATMManagerImproved : MonoBehaviour
     
     private void OnDepositClick()
     {
-        if (atmPopup != null)
+        // PopupBank를 우선적으로 사용
+        if (popupBankScript != null)
         {
+            popupBankScript.ShowDepositPopup();
+        }
+        else if (atmPopup != null)
+        {
+            // 기존 ATMPopupImproved가 있으면 사용
             atmPopup.ShowDepositPopup();
+        }
+        else if (popupBank != null)
+        {
+            // PopupBank GameObject를 직접 제어
+            Transform depositPopup = popupBank.transform.Find("DepositPopup");
+            if (depositPopup != null)
+            {
+                depositPopup.gameObject.SetActive(true);
+            }
+            Debug.Log("입금 팝업 표시");
         }
         else
         {
-            Debug.LogError("ATMPopup reference is missing!");
+            Debug.LogError("PopupBank 또는 ATMPopup reference가 없습니다!");
         }
     }
     
     private void OnWithdrawClick()
     {
-        if (atmPopup != null)
+        // PopupBank를 우선적으로 사용
+        if (popupBankScript != null)
         {
+            popupBankScript.ShowWithdrawPopup();
+        }
+        else if (atmPopup != null)
+        {
+            // 기존 ATMPopupImproved가 있으면 사용
             atmPopup.ShowWithdrawPopup();
+        }
+        else if (popupBank != null)
+        {
+            // PopupBank GameObject를 직접 제어
+            Transform withdrawPopup = popupBank.transform.Find("WithdrawPopup");
+            if (withdrawPopup != null)
+            {
+                withdrawPopup.gameObject.SetActive(true);
+            }
+            Debug.Log("출금 팝업 표시");
         }
         else
         {
-            Debug.LogError("ATMPopup reference is missing!");
+            Debug.LogError("PopupBank 또는 ATMPopup reference가 없습니다!");
         }
     }
     
@@ -160,5 +199,11 @@ public class ATMManagerImproved : MonoBehaviour
             Debug.Log(string.Format("[{0}] {1}: {2:N0}원, 잔액: {3:N0}원", 
                 record.dateTime, type, record.amount, record.balanceAfter));
         }
+    }
+    
+    // PopupBank에서 접근할 수 있도록 public 메서드 추가
+    public BankData GetBankData()
+    {
+        return bankDataManager.GetBankData();
     }
 }
