@@ -9,7 +9,6 @@ public class PopupBank : MonoBehaviour
     [Header("Popup Panels")]
     [SerializeField] private GameObject depositPopupPanel;
     [SerializeField] private GameObject withdrawPopupPanel;
-    [SerializeField] private GameObject errorPopupPanel;
     
     [Header("Deposit Popup UI")]
     [SerializeField] private TextMeshProUGUI depositTitleText;
@@ -27,10 +26,6 @@ public class PopupBank : MonoBehaviour
     [SerializeField] private Button withdrawConfirmButton;
     [SerializeField] private Button withdrawBackButton;
     
-    [Header("Error Popup UI")]
-    [SerializeField] private TextMeshProUGUI errorMessageText;
-    [SerializeField] private Button errorConfirmButton;
-    
     [Header("Quick Amount Settings")]
     private int[] quickAmounts = { 10000, 30000, 50000, 100000 };
     
@@ -43,12 +38,6 @@ public class PopupBank : MonoBehaviour
         SetupDepositButtons();
         SetupWithdrawButtons();
         SetupInputFields();
-        
-        // 에러 팝업 버튼 설정
-        if (errorConfirmButton != null)
-        {
-            errorConfirmButton.onClick.AddListener(CloseErrorPopup);
-        }
         
         // ATMManager 찾기
         if (atmManager == null)
@@ -221,27 +210,27 @@ public class PopupBank : MonoBehaviour
         
         if (string.IsNullOrEmpty(inputText))
         {
-            ShowErrorPopup("금액을 입력해주세요.");
+            Debug.LogWarning("금액을 입력해주세요.");
             return;
         }
         
         int amount;
         if (!int.TryParse(inputText, out amount))
         {
-            ShowErrorPopup("올바른 숫자를 입력해주세요.");
+            Debug.LogWarning("올바른 숫자를 입력해주세요.");
             return;
         }
         
         if (amount <= 0)
         {
-            ShowErrorPopup("0보다 큰 금액을 입력해주세요.");
+            Debug.LogWarning("0보다 큰 금액을 입력해주세요.");
             return;
         }
         
         // 최대 금액 제한
         if (amount > 10000000)
         {
-            ShowErrorPopup("1천만원 이하의 금액을 입력해주세요.");
+            Debug.LogWarning("1천만원 이하의 금액을 입력해주세요.");
             return;
         }
         
@@ -251,7 +240,7 @@ public class PopupBank : MonoBehaviour
         // 현금 확인
         if (amount > userData.cash)
         {
-            ShowErrorPopup(string.Format("현금이 부족합니다.\n현재 현금: {0:N0}원", userData.cash));
+            Debug.LogWarning(string.Format("현금이 부족합니다. 현재 현금: {0:N0}원", userData.cash));
             return;
         }
         
@@ -272,7 +261,7 @@ public class PopupBank : MonoBehaviour
         }
         else
         {
-            ShowErrorPopup("입금 처리 중 오류가 발생했습니다.");
+            Debug.LogWarning("입금 처리 중 오류가 발생했습니다.");
         }
     }
     
@@ -282,27 +271,27 @@ public class PopupBank : MonoBehaviour
         
         if (string.IsNullOrEmpty(inputText))
         {
-            ShowErrorPopup("금액을 입력해주세요.");
+            Debug.LogWarning("금액을 입력해주세요.");
             return;
         }
         
         int amount;
         if (!int.TryParse(inputText, out amount))
         {
-            ShowErrorPopup("올바른 숫자를 입력해주세요.");
+            Debug.LogWarning("올바른 숫자를 입력해주세요.");
             return;
         }
         
         if (amount <= 0)
         {
-            ShowErrorPopup("0보다 큰 금액을 입력해주세요.");
+            Debug.LogWarning("0보다 큰 금액을 입력해주세요.");
             return;
         }
         
         // 최대 금액 제한
         if (amount > 10000000)
         {
-            ShowErrorPopup("1천만원 이하의 금액을 입력해주세요.");
+            Debug.LogWarning("1천만원 이하의 금액을 입력해주세요.");
             return;
         }
         
@@ -312,7 +301,7 @@ public class PopupBank : MonoBehaviour
         // 잔액 확인
         if (amount > userData.balance)
         {
-            ShowErrorPopup(string.Format("잔액이 부족합니다.\n현재 잔액: {0:N0}원", userData.balance));
+            Debug.LogWarning(string.Format("잔액이 부족합니다. 현재 잔액: {0:N0}원", userData.balance));
             return;
         }
         
@@ -333,28 +322,7 @@ public class PopupBank : MonoBehaviour
         }
         else
         {
-            ShowErrorPopup("출금 처리 중 오류가 발생했습니다.");
-        }
-    }
-    
-    private void ShowErrorPopup(string message)
-    {
-        if (errorPopupPanel != null)
-        {
-            errorPopupPanel.SetActive(true);
-            
-            if (errorMessageText != null)
-            {
-                errorMessageText.text = message;
-            }
-        }
-    }
-    
-    private void CloseErrorPopup()
-    {
-        if (errorPopupPanel != null)
-        {
-            errorPopupPanel.SetActive(false);
+            Debug.LogWarning("출금 처리 중 오류가 발생했습니다.");
         }
     }
     
@@ -380,7 +348,6 @@ public class PopupBank : MonoBehaviour
     {
         if (depositPopupPanel != null) depositPopupPanel.SetActive(false);
         if (withdrawPopupPanel != null) withdrawPopupPanel.SetActive(false);
-        if (errorPopupPanel != null) errorPopupPanel.SetActive(false);
     }
     
     // Update에서 키보드 입력 처리
@@ -409,15 +376,6 @@ public class PopupBank : MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.Escape))
             {
                 CloseWithdrawPopup();
-            }
-        }
-        
-        // 에러 팝업에서 Enter/Escape 처리
-        if (errorPopupPanel != null && errorPopupPanel.activeSelf)
-        {
-            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Escape))
-            {
-                CloseErrorPopup();
             }
         }
     }
